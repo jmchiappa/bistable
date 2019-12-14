@@ -1,13 +1,12 @@
 #include "Bistable.h"
 
-#define RISING_EDGE		true
-#define FALLING_EDGE	false
-#define DEFAULT			true
+#define DEFAULT			HIGH
 Bistable Button;
 
 void setup(){
 	pinMode(LED_BUILTIN,OUTPUT);
-	Button.begin(23,RISING_EDGE, INPUT_PULLUP, DEFAULT);	// Bouton bleue de la NUCLEO
+	Button.begin(USER_BTN,FALLING_EDGE, INPUT_PULLUP, DEFAULT);	// Bouton bleue de la NUCLEO
+  digitalWrite(LED_BUILTIN,Button.getState());
 }
 
 void loop()
