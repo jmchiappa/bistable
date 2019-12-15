@@ -3,11 +3,12 @@
 
 Bistable::Bistable() {}
 
-void Bistable::begin(uint8_t Pin,uint8_t Active_Edge, uint8_t Input_type, uint8_t Default_state)
+void Bistable::begin(uint8_t Pin,uint8_t Active_Edge, uint8_t Input_type, uint8_t Default_state, uint64_t DebouncerDelay)
 {
 	this->Active_Edge = Active_Edge;
 	this->Current_state = Default_state;
 	this->PinNumber=Pin;
+	this->delay=DebouncerDelay;
 	if((Input_type==INPUT)||(Input_type==INPUT_PULLUP))
 	{
 		pinMode(Pin, Input_type);
@@ -16,40 +17,43 @@ void Bistable::begin(uint8_t Pin,uint8_t Active_Edge, uint8_t Input_type, uint8_
 		pinMode(Pin, INPUT);
 
 	Last_input_state = digitalRead(this->PinNumber);
-	cnt_=0;
-	//Serial.begin(115200);
+	t0=0;
+	Serial.begin(115200);
 }
 
 /* Return true if an expected transition occurs
 */
 bool Bistable::isChanged(void)
 {
+	bool ret=false;
 	uint8_t state = digitalRead(this->PinNumber);
-	//Serial.print("1 "+String(Last_input_state)+" "+String(state)+" "+String(Active_Edge));
-	if(state!=Last_input_state) { // transition occurs
-		//Serial.print("-> 2 "+String(Last_input_state)+" "+String(state)+" "+String(Active_Edge));
-		if(state==Active_Edge) {
-			//Serial.print("-> 3 "+String(Last_input_state)+" "+String(state)+String(cnt_));
-			cnt_++;
-			if(cnt_>Seuil) {
-				//Serial.print("-> 4");
-				cnt_=0;
+	Serial.print("1 "+String(Last_input_state)+" "+String(state)+" "+String(Active_Edge));
+	if(t0==0) {
+		if(state!=Last_input_state) { // transition occurs
+			Serial.print("-> 2 "+String(Last_input_state)+" "+String(state)+" "+String(Active_Edge));
+			if(state==Active_Edge) {
+				Serial.print("-> 3 "+String(Last_input_state)+" "+String(state));
+				t0=millis();
+			}
+			else {
 				Last_input_state = state;
-				Current_state=(Current_state==HIGH?LOW:HIGH);	// XOR Current_state
-				return true;	// transition occurs
 			}
 		}
-		else {
-			Last_input_state = state;
+	}
+	else if((millis()-t0)>delay) {
+		if(state!=Last_input_state) { // transition occurs
+			Serial.print("-> 4");
+			Current_state=(Current_state==HIGH?LOW:HIGH);	// XOR Current_state
+			ret=true;	// transition occurs
 		}
+		Serial.print("-> 5");
+		t0=0;
+		Last_input_state = state;
 	}
-	else{
-		if(cnt_>0)
-			cnt_--;
-	}
+
 	//Last_input_state = state;
-	//Serial.println();
-	return false; // no change
+	Serial.println();
+	return ret; // no change
 }
 
 /* Return current state of bistable variable
@@ -57,4 +61,9 @@ bool Bistable::isChanged(void)
 uint8_t Bistable::getState(void)
 {
 	return Current_state; // no change
+}
+
+void Bistable::changeDebouncerDelay(uint64_t delay)
+{
+	this->delay = delay;
 }

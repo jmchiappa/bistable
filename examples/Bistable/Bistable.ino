@@ -7,6 +7,7 @@ void setup(){
 	pinMode(LED_BUILTIN,OUTPUT);
 	Button.begin(USER_BTN,FALLING_EDGE, INPUT_PULLUP, DEFAULT);	// Bouton bleue de la NUCLEO
   digitalWrite(LED_BUILTIN,Button.getState());
+  Button.changeDebouncerDelay(1000);
 }
 
 void loop()
