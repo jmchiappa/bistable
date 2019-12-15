@@ -18,6 +18,7 @@ void Bistable::begin(uint8_t Pin,uint8_t Active_Edge, uint8_t Input_type, uint8_
 
 	Last_input_state = digitalRead(this->PinNumber);
 	t0=0;
+	Update=false;
 	Serial.begin(115200);
 }
 
@@ -53,13 +54,16 @@ bool Bistable::isChanged(void)
 
 	//Last_input_state = state;
 	Serial.println();
+	Update=true;
 	return ret; // no change
 }
 
 /* Return current state of bistable variable
 */
 uint8_t Bistable::getState(void)
-{
+{	
+	if(!Update) isChanged();
+	Update=false;
 	return Current_state; // no change
 }
 
