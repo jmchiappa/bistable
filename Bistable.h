@@ -12,12 +12,16 @@
 
 #include "Arduino.h"
 
-#define RISING_EDGE		HIGH
-#define FALLING_EDGE	LOW
+// #define RISING_EDGE		HIGH
+// #define FALLING_EDGE	LOW
 
 class Bistable
 {
 	public:
+
+		static const uint8_t	FALLING_EDGE = LOW;
+		static const uint8_t	RISING_EDGE = HIGH;
+
 		Bistable(void);
 		void begin(uint8_t Pin,uint8_t Active_Edge, uint8_t Input_type=INPUT, uint8_t Default_state=LOW, uint64_t DebouncerDelay=50);
 		bool isChanged();
