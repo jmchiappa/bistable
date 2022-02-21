@@ -27,6 +27,7 @@ class Bistable
 		bool isChanged();
 		uint8_t getState();
 		void changeDebouncerDelay(uint64_t delay);
+		void setState(uint8_t state);
 	private:
 		uint8_t PinNumber;
 		uint8_t Active_Edge;

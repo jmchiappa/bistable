@@ -67,6 +67,12 @@ uint8_t Bistable::getState(void)
 	return Current_state; // no change
 }
 
+void Bistable::setState(uint8_t state) {
+	this->Current_state = state;
+	Last_input_state = state;
+	Update = true;
+}
+
 void Bistable::changeDebouncerDelay(uint64_t delay)
 {
 	this->delay = delay;
